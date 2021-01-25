@@ -102,31 +102,119 @@ public class Configuration {
 
   protected Environment environment;
 
+  /**
+   * 是否允许在嵌套语句中使用分页（RowBounds）
+   * 默认false：表示允许
+   */
   protected boolean safeRowBoundsEnabled;
+  /**
+   * 是否允许在嵌套语句中使用分页（RowHandler）
+   * 默认true：表示不允许
+   */
   protected boolean safeResultHandlerEnabled = true;
+  /**
+   * 映射下划线到驼峰
+   */
   protected boolean mapUnderscoreToCamelCase;
+  /**
+   * 当开启的时候，任何方法的调用都会加载该对象的所有属性，否则，每个属性都会按需加载(参考lazyLoadTriggerMethods)
+   */
   protected boolean aggressiveLazyLoading;
+  /**
+   * 是否允许单一语句返回多结果集（需要JDBC驱动支持）
+   */
   protected boolean multipleResultSetsEnabled = true;
+  /**
+   * 允许 JDBC 支持自动生成主键，需要驱动兼容。 如果设置为 true 则这个设置强制使用自动生成主键，尽管一些驱动不能兼容但仍可正常工作（比如 Derby）。
+   */
   protected boolean useGeneratedKeys;
+  /**
+   * 使用列标签代替列名，不同的驱动在这方面会有不同的表现；
+   * useColumnLabel是使用列标签代替列名，列标签指的是别名。正确的应该是用别名代替列名，用来自定义字段映射
+   */
   protected boolean useColumnLabel = true;
+  /**
+   * 是否开启Mapper缓存，即二级缓存
+   */
   protected boolean cacheEnabled = true;
+  /**
+   * 指定当结果集中的值为null的时候，是否调用映射对象的Setter方法，这对于有Map.keySet()
+   * 依赖或null值初始化的时候是有用的，注意基本类型（int，boolean等）是不能设置为null的
+   */
   protected boolean callSettersOnNulls;
+  /**
+   * 允许使用方法签名中的名称作为语句查询参数。
+   * 为了使用该特性，必须是java8，并且加上-parameters选项
+   *
+   */
   protected boolean useActualParamName = true;
+  /**
+   * 当返回的所有列都是空的时候，Mybatis默认返回null，
+   * 当开启这个设置的时候，Mybatis会返回一个空实例。
+   * 请注意：也适用于嵌套的结果集（collection，association）
+   */
   protected boolean returnInstanceForEmptyRow;
   protected boolean shrinkWhitespacesInSql;
 
+  /**
+   * 指定mybatis增加到日志名称的前缀
+   */
   protected String logPrefix;
+  /**
+   * 指定mybatis所用日志的具体实现，没有指定的时候将自动查找
+   * SLF4J
+   * LOG4J
+   * LOG4J2
+   * JDK_LOGGING
+   * COMMONS_LOGGING
+   * STDOUT_LOGGING
+   * NO_LOGGING
+   */
   protected Class<? extends Log> logImpl;
+  /**
+   * 指定VFS的实现
+   * MyBatis 中使用 VFS 表示虚拟文件系统,用来查找指定路径下的资源
+   */
   protected Class<? extends VFS> vfsImpl;
   protected Class<?> defaultSqlProviderType;
+  /**
+   * Mybatis使用本地缓存机制防止循环引用和加速重复查询。
+   * SESSION：会缓存一个会话中执行的所有查询；
+   * STATEMENT：本地会话仅用在语句执行上，对相同sqlSession的不同调用不会共享数据
+   */
   protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
   protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
   protected Set<String> lazyLoadTriggerMethods = new HashSet<>(Arrays.asList("equals", "clone", "hashCode", "toString"));
+  /**
+   * 设置超时时间，它决定驱动等待数据库响应的秒数。
+   */
   protected Integer defaultStatementTimeout;
+  /**
+   * 用于指定statement的fetchSize属性，用于限制从数据库中取出数据的最大行数
+   * 默认为null，由数据库驱动默认决定
+   */
   protected Integer defaultFetchSize;
   protected ResultSetType defaultResultSetType;
+  /**
+   * 配置默认的执行器。
+   * SIMPLE 就是普通的执行器；
+   * REUSE 执行器会重用预处理语句（prepared statements）；
+   * BATCH 执行器将重用语句并执行批量更新。
+   */
   protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
+  /**
+   * 指定 MyBatis 应如何自动映射列到字段或属性。
+   * NONE 表示取消自动映射；
+   * PARTIAL 只会自动映射没有定义嵌套结果集映射的结果集。
+   * FULL 会自动映射任意复杂的结果集（无论是否嵌套）。
+   */
   protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
+  /**
+   * 指定发现自动映射目标未知列（或者未知属性）的行为；
+   * NONE：不作任何反应
+   * WARNING：输出提醒日志
+   * FAILING：映射失败，抛出SqlSessionException异常
+   */
   protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
 
   protected Properties variables = new Properties();
@@ -134,8 +222,15 @@ public class Configuration {
   protected ObjectFactory objectFactory = new DefaultObjectFactory();
   protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 
+  /**
+   * 延迟加载的全局开关，当开启的时候，所有的关联对象都会延迟加载，特定的关联关系中，可通过设置fetchType属性来覆盖改项的开关状态
+   */
   protected boolean lazyLoadingEnabled = false;
-  protected ProxyFactory proxyFactory = new JavassistProxyFactory(); // #224 Using internal Javassist instead of OGNL
+  /**
+   * 指定mybatis创建具有延迟加载能力的对象所用到的代理工具
+   */
+  // #224 Using internal Javassist instead of OGNL
+  protected ProxyFactory proxyFactory = new JavassistProxyFactory();
 
   protected String databaseId;
   /**
@@ -143,29 +238,85 @@ public class Configuration {
    * Used to create Configuration for loading deserialized unread properties.
    *
    * @see <a href='https://github.com/mybatis/old-google-code-issues/issues/300'>Issue 300 (google code)</a>
+   *
+   * 指定一个提供Configuration实例的类。这个被返回的COnfiguration实例用来加载被反序列化对象的懒加载属性值
+   *
    */
   protected Class<?> configurationFactory;
 
+  /**
+   * 用于注册Mapper接口信息，建立Mapper接口的Class对象和MapperProxyFactory对象之间的关系，其中MapperProxyFactory对象用于创建Mapper
+   * 动态代理对象
+   */
   protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
+  /**
+   * 用于注册Mybatis插件信息，Mybatis插件实际上就是一个拦截器
+   */
   protected final InterceptorChain interceptorChain = new InterceptorChain();
+  /**
+   * 用于注册所有的TypeHandler，并建立java类型、JDBC类型、TypeHandler之间的对应关系
+   */
   protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry(this);
+  /**
+   * 用于注册所有的类型别名
+   */
   protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+  /**
+   * 用于注册languageDriver:用于解析SQL配置，将配置信息转换成SqlSource对象
+   */
   protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
-
-  protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>("Mapped Statements collection")
+  /**
+   * MappedStatement对象描述<insert|select|update|delete>或者使用注解@Select@Update等等配置的SQL信息，Mybatis
+   * 将所有的MappedStatement对象注册到该属性中，其中key是Mapper的id，Value是MappedStatement对象
+   */
+  protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>(
+      "Mapped Statements collection")
       .conflictMessageProducer((savedValue, targetValue) ->
           ". please check " + savedValue.getResource() + " and " + targetValue.getResource());
+  /**
+   * 用于注册Mapper中配置的所有缓存信息，其中key为Cache的id，也就是Mapper的命名空间，Value为Cache对象
+   */
   protected final Map<String, Cache> caches = new StrictMap<>("Caches collection");
+  /**
+   * 用于注册Mapper配置文件中通过<resultMap>标签配置的ResultMap信息，ResultMap信息用于建立Java实体属性与数据库字段之间的映射关系，其中key
+   * 是resultMap的id，改Id是由mapper的命名空间和resultMap标签的id属性组成的。Value为解析resultMap标签后得到的ResultMap对象
+   */
   protected final Map<String, ResultMap> resultMaps = new StrictMap<>("Result Maps collection");
+  /**
+   * 用于注册Mapper中通过<parameterMap>标签注册的参数映射信息，key是ParameterMap的id，由命名空间和parameterMap标签的id组成，Value
+   * 为解析标签后得到的parameterMap对象
+   */
   protected final Map<String, ParameterMap> parameterMaps = new StrictMap<>("Parameter Maps collection");
+  /**
+   * 用于注册KeyGenerator，KeyGenerator是Mybatis的主键生成器，MyBatis提供了三种KeyGenerator:
+   * Jdbc3KeyGenerator:数据库主键自增
+   * NoKeyGenerator:无自增主键
+   * SelectKeyGenerator:通过select语句查询主键自增，比如oracle的sequence
+   */
   protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<>("Key Generators collection");
-
+  /**
+   * 用于注册所有Mapper XML配置文件路径
+   */
   protected final Set<String> loadedResources = new HashSet<>();
+  /**
+   * 用于注册Mapper中通过<sql>标签配置的sql片段，key是sql片段的id，value是mybatis封装的表示xml节点的XNode对象
+   */
   protected final Map<String, XNode> sqlFragments = new StrictMap<>("XML fragments parsed from previous mappers");
-
+  /**
+   * 用于注册解析出现异常的XMLStatementBuilder对象
+   */
   protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<>();
+  /**
+   * 用于注册解析出现异常的CacheRefResolver对象
+   */
   protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList<>();
+  /**
+   * 用于注册解析出现异常的ResultMapResolver对象
+   */
   protected final Collection<ResultMapResolver> incompleteResultMaps = new LinkedList<>();
+  /**
+   * 用于注册解析出现异常的MethodResolver对象
+   */
   protected final Collection<MethodResolver> incompleteMethods = new LinkedList<>();
 
   /*
