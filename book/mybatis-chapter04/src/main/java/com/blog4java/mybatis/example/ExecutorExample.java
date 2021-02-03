@@ -45,6 +45,10 @@ public class ExecutorExample {
                 RowBounds.DEFAULT,
                 Executor.NO_RESULT_HANDLER);
         System.out.println(JSON.toJSON(userList));
+
+
+
+        //正常来说，我们使用sqlSession操作数据库，而不会直接使用Executor，这里只是为了验证Executor的功能，所以直接操作executor
     }
 
 

@@ -25,8 +25,17 @@ import java.sql.SQLException;
  */
 public interface ParameterHandler {
 
+  /**
+   * 用于获取执行Mapper时传入的参数对象
+   * @return
+   */
   Object getParameterObject();
 
+  /**
+   * 用于为JDBC的PreparedStatement或者是CallableStatement设值
+   * @param ps
+   * @throws SQLException
+   */
   void setParameters(PreparedStatement ps) throws SQLException;
 
 }

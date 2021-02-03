@@ -25,6 +25,14 @@ import java.sql.SQLException;
  */
 public interface TypeHandler<T> {
 
+  /**
+   * 为PreparedStatement设值
+   * @param ps
+   * @param i
+   * @param parameter
+   * @param jdbcType
+   * @throws SQLException
+   */
   void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
 
   /**
@@ -42,6 +50,13 @@ public interface TypeHandler<T> {
 
   T getResult(ResultSet rs, int columnIndex) throws SQLException;
 
+  /**
+   * 获取存储过程的调用结果
+   * @param cs
+   * @param columnIndex
+   * @return
+   * @throws SQLException
+   */
   T getResult(CallableStatement cs, int columnIndex) throws SQLException;
 
 }

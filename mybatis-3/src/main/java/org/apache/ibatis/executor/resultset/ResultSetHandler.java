@@ -27,10 +27,29 @@ import org.apache.ibatis.cursor.Cursor;
  */
 public interface ResultSetHandler {
 
+  /**
+   * 获取statement对象中的ResultSet对象，对resultSet对象进行处理，返回包含结果实体的List对象
+   * @param stmt
+   * @param <E>
+   * @return
+   * @throws SQLException
+   */
   <E> List<E> handleResultSets(Statement stmt) throws SQLException;
 
+  /**
+   * 将ResultSet对象包装成Cursor对象，对Cursor遍历时，能够动态的从数据库中获取数据，避免一次性将所有数据加载到内存中
+   * @param stmt
+   * @param <E>
+   * @return
+   * @throws SQLException
+   */
   <E> Cursor<E> handleCursorResultSets(Statement stmt) throws SQLException;
 
+  /**
+   * 处理存储过程的调用结果
+   * @param cs
+   * @throws SQLException
+   */
   void handleOutputParameters(CallableStatement cs) throws SQLException;
 
 }
