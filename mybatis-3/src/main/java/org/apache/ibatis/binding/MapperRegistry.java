@@ -40,6 +40,9 @@ public class MapperRegistry {
     this.config = config;
   }
 
+  /**
+   * 拿到mapperProxyFactory，然后newProxyInstance获取Mapper接口的动态代理对象
+   */
   @SuppressWarnings("unchecked")
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
     final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
@@ -57,6 +60,11 @@ public class MapperRegistry {
     return knownMappers.containsKey(type);
   }
 
+  /**
+   * 注册mapper接口和
+   * @param type
+   * @param <T>
+   */
   public <T> void addMapper(Class<T> type) {
     if (type.isInterface()) {
       if (hasMapper(type)) {
@@ -64,6 +72,7 @@ public class MapperRegistry {
       }
       boolean loadCompleted = false;
       try {
+        //将mapper接口与MapperProxyFactory（用来newProxyInstance的）关联起来，统一放在一个map中
         knownMappers.put(type, new MapperProxyFactory<>(type));
         // It's important that the type is added before the parser is run
         // otherwise the binding may automatically be attempted by the

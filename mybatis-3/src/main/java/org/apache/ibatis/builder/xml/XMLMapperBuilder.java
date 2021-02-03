@@ -92,13 +92,20 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
+      //调用XPathParser的evalNode()方法获取根节点对应的XNode对象，
+      //然后开始解析所有的sql
       configurationElement(parser.evalNode("/mapper"));
+      //将资源路径添加到Configuration中
       configuration.addLoadedResource(resource);
+      //
       bindMapperForNamespace();
     }
 
+    //之前已经解析过一遍了，如果出了异常，继续解析之前出现异常的ResultMap对象
     parsePendingResultMaps();
+    //之前已经解析过一遍了，如果出了异常，继续解析之前出现异常的CacheRef对象
     parsePendingCacheRefs();
+    //之前已经解析过一遍了，如果出了异常，继续解析之前出现异常的select|insert|update|delete对象
     parsePendingStatements();
   }
 
@@ -108,10 +115,12 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void configurationElement(XNode context) {
     try {
+      //获取命名空间，命名空间不能为空
       String namespace = context.getStringAttribute("namespace");
       if (namespace == null || namespace.isEmpty()) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
+      //设置当前正在解析的mapper的名称空间
       builderAssistant.setCurrentNamespace(namespace);
       cacheRefElement(context.evalNode("cache-ref"));
       cacheElement(context.evalNode("cache"));
@@ -133,8 +142,10 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
     for (XNode context : list) {
+      //通过XMLStatementBuilder解析select|insert|update|delete标签
       final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
       try {
+        //开始解析
         statementParser.parseStatementNode();
       } catch (IncompleteElementException e) {
         configuration.addIncompleteStatement(statementParser);
