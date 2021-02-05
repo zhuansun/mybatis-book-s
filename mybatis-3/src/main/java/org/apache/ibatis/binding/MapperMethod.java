@@ -218,14 +218,24 @@ public class MapperMethod {
 
   public static class SqlCommand {
 
+    /**
+     * mapper id
+     */
     private final String name;
+    /**
+     * sql 类型
+     */
     private final SqlCommandType type;
 
     public SqlCommand(Configuration configuration, Class<?> mapperInterface, Method method) {
+      //
       final String methodName = method.getName();
+      // 获取声明该方法的类或接口的Class对象
       final Class<?> declaringClass = method.getDeclaringClass();
+      // 获取描述 insert,update等标签的MappedStatement对象
       MappedStatement ms = resolveMappedStatement(mapperInterface, methodName, declaringClass,
           configuration);
+
       if (ms == null) {
         if (method.getAnnotation(Flush.class) != null) {
           name = null;
@@ -253,12 +263,16 @@ public class MapperMethod {
 
     private MappedStatement resolveMappedStatement(Class<?> mapperInterface, String methodName,
         Class<?> declaringClass, Configuration configuration) {
+      // 获取mapper的id
       String statementId = mapperInterface.getName() + "." + methodName;
+      //如果configuration中已经注册了这个MappedStatement
+      //则直接获取
       if (configuration.hasStatement(statementId)) {
         return configuration.getMappedStatement(statementId);
       } else if (mapperInterface.equals(declaringClass)) {
         return null;
       }
+      //如果方法是在父接口中定义的，则递归获取父接口中对应的MappedStatement对象
       for (Class<?> superInterface : mapperInterface.getInterfaces()) {
         if (declaringClass.isAssignableFrom(superInterface)) {
           MappedStatement ms = resolveMappedStatement(superInterface, methodName,
@@ -286,6 +300,7 @@ public class MapperMethod {
     private final ParamNameResolver paramNameResolver;
 
     public MethodSignature(Configuration configuration, Class<?> mapperInterface, Method method) {
+      //获取方法的返回值类型
       Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, mapperInterface);
       if (resolvedReturnType instanceof Class<?>) {
         this.returnType = (Class<?>) resolvedReturnType;
@@ -300,8 +315,11 @@ public class MapperMethod {
       this.returnsOptional = Optional.class.equals(this.returnType);
       this.mapKey = getMapKey(method);
       this.returnsMap = this.mapKey != null;
+      //RowBounds参数位置索引
       this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);
+      //ResultHander参数位置索引
       this.resultHandlerIndex = getUniqueParamIndex(method, ResultHandler.class);
+      //ParamNameResolver用于解析Mapper方法参数
       this.paramNameResolver = new ParamNameResolver(configuration, method);
     }
 

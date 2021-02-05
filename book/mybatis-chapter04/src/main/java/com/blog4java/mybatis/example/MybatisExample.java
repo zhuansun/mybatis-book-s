@@ -32,16 +32,17 @@ public class MybatisExample {
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         // 调用openSession()方法创建SqlSession实例
         SqlSession sqlSession = sqlSessionFactory.openSession();
-        // 获取UserMapper代理对象
+        // 从SqlSession中获取UserMapper代理对象
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         // 执行Mapper方法，获取执行结果
         List<UserEntity> userList = userMapper.listAllUser();
+        //打印执行结果
+        System.out.println(JSON.toJSONString(userList));
          /*
         // 兼容Ibatis，通过Mapper Id执行SQL操作
         List<UserEntity> userList = sqlSession.selectList(
                 "com.blog4java.mybatis.com.blog4java.mybatis.example.mapper.UserMapper.listAllUser");
         */
-        System.out.println(JSON.toJSONString(userList));
     }
 
     @Test

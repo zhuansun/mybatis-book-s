@@ -80,8 +80,10 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
       if (Object.class.equals(method.getDeclaringClass())) {
+        //如果是继承自Object的类，就直接执行，不处理
         return method.invoke(this, args);
       } else {
+        //通过cachedInvoker获取MapperMethodInvoker
         return cachedInvoker(method).invoke(proxy, method, args, sqlSession);
       }
     } catch (Throwable t) {
@@ -101,6 +103,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
 
       return methodCache.computeIfAbsent(method, m -> {
         if (m.isDefault()) {
+          //如果是默认方法，（java8提供的default方法，就是接口里可以有实现逻辑）
           try {
             if (privateLookupInMethod == null) {
               return new DefaultMethodInvoker(getMethodHandleJava8(method));
@@ -112,6 +115,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
             throw new RuntimeException(e);
           }
         } else {
+          //
           return new PlainMethodInvoker(new MapperMethod(mapperInterface, method, sqlSession.getConfiguration()));
         }
       });
@@ -149,9 +153,15 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable {
+      // mybatis的动态代理，其实谁都没有代理；
+      // 它仅仅只是生成了一个mapper实例，然后利用了动态代理的“切面”功能；
+      // 然后统一使用mapperMethod执行sql查询
+      // 标准的JDK动态代理，在真正执行的时候会调用method.invoke()
+      // Mybatis的动态代理在真正执行的时候根本没用到method
       return mapperMethod.execute(sqlSession, args);
     }
   }
+
 
   private static class DefaultMethodInvoker implements MapperMethodInvoker {
     private final MethodHandle methodHandle;

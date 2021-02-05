@@ -184,19 +184,23 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     final List<Object> multipleResults = new ArrayList<>();
 
     int resultSetCount = 0;
+    //获取resultSet（JDBC）对象，将ResuleSet对象包装成ResultSetWrapper（MyBatis）
     ResultSetWrapper rsw = getFirstResultSet(stmt);
 
+    //获取resultMap信息，一般只有一个：在xml中配置的resultMap
     List<ResultMap> resultMaps = mappedStatement.getResultMaps();
     int resultMapCount = resultMaps.size();
     validateResultMapsCount(rsw, resultMapCount);
     while (rsw != null && resultMapCount > resultSetCount) {
       ResultMap resultMap = resultMaps.get(resultSetCount);
+      //处理结果集
       handleResultSet(rsw, resultMap, multipleResults, null);
       rsw = getNextResultSet(stmt);
       cleanUpAfterHandlingResultSet();
       resultSetCount++;
     }
 
+    //这里一样，获取resultSet，也是xml中配置的
     String[] resultSets = mappedStatement.getResultSets();
     if (resultSets != null) {
       while (rsw != null && resultSetCount < resultSets.length) {
@@ -204,6 +208,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         if (parentMapping != null) {
           String nestedResultMapId = parentMapping.getNestedResultMapId();
           ResultMap resultMap = configuration.getResultMap(nestedResultMapId);
+          //处理结果集
           handleResultSet(rsw, resultMap, null, parentMapping);
         }
         rsw = getNextResultSet(stmt);
@@ -212,6 +217,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       }
     }
 
+    //返回结果集
     return collapseSingleResultList(multipleResults);
   }
 
