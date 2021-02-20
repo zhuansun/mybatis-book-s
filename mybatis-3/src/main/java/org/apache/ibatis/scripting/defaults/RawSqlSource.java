@@ -29,6 +29,7 @@ import org.apache.ibatis.session.Configuration;
  * Static SqlSource. It is faster than {@link DynamicSqlSource} because mappings are
  * calculated during startup.
  *
+ * 用于描述mapper.xml的sql资源信息，和DynamicSqlSource不同的是，RawSqlSource描述的sql是确定的，不包含动态参数配置。
  * @since 3.2.0
  * @author Eduardo Macarron
  */

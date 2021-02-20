@@ -147,7 +147,11 @@ public class DefaultSqlSession implements SqlSession {
 
   private <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds, ResultHandler handler) {
     try {
+      //MappedStatement是在mybatis启动的时候就解析xml加载进来了，这里只是根据sql的ID，拿到具体sql的MappedStatement
       MappedStatement ms = configuration.getMappedStatement(statement);
+      // sqlSession是面向用户的API，真正执行查询的是executor执行器，它是哪里来的？
+      // 是当前sqlSession自带的，sqlSession哪里来的？是在最开始的时候openSession获取到的，然后session.getMapper将this传进来的。
+      // executor是在openSession时候赋值的
       return executor.query(ms, wrapCollection(parameter), rowBounds, handler);
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);

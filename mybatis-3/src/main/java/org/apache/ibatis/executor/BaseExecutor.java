@@ -55,7 +55,13 @@ public abstract class BaseExecutor implements Executor {
   protected Executor wrapper;
 
   protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
+  /**
+   * Mybatis一级缓存对象，用于缓存Mybatis的查询结果
+   */
   protected PerpetualCache localCache;
+  /**
+   * Mybatis存储过程输出参数缓存，用于缓存存储过程调用结果
+   */
   protected PerpetualCache localOutputParameterCache;
   protected Configuration configuration;
 
@@ -135,6 +141,7 @@ public abstract class BaseExecutor implements Executor {
     BoundSql boundSql = ms.getBoundSql(parameter);
     //创建cacheKey，用于缓存
     CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
+    //调用重载的query方法
     return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
   }
 
@@ -201,6 +208,7 @@ public abstract class BaseExecutor implements Executor {
       throw new ExecutorException("Executor was closed.");
     }
     CacheKey cacheKey = new CacheKey();
+    //将sqlID，offset偏移量，limit条数，sql语句进行hash，然后求和
     cacheKey.update(ms.getId());
     cacheKey.update(rowBounds.getOffset());
     cacheKey.update(rowBounds.getLimit());
@@ -208,6 +216,7 @@ public abstract class BaseExecutor implements Executor {
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     TypeHandlerRegistry typeHandlerRegistry = ms.getConfiguration().getTypeHandlerRegistry();
     // mimic DefaultParameterHandler logic
+    //所有的参数值的参数名称，不是实际的值，比如userId=123，这里只能获取到“userId”
     for (ParameterMapping parameterMapping : parameterMappings) {
       if (parameterMapping.getMode() != ParameterMode.OUT) {
         Object value;
@@ -225,6 +234,7 @@ public abstract class BaseExecutor implements Executor {
         cacheKey.update(value);
       }
     }
+    //Mybatis主配置文件中，通过environment标签配置的环境信息
     if (configuration.getEnvironment() != null) {
       // issue #176
       cacheKey.update(configuration.getEnvironment().getId());

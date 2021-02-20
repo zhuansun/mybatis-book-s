@@ -9,6 +9,7 @@
 		<setting name="mapUnderscoreToCamelCase" value="true"/>
 		<setting name="logImpl" value="LOG4J"/>
 		<setting name="cacheEnabled" value="true"/>
+		<setting name="localCacheScope" value="STATEMENT"/>
 	</settings>
 
 	<environments default="dev" >

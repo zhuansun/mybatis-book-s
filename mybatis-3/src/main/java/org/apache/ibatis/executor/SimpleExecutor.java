@@ -58,11 +58,11 @@ public class SimpleExecutor extends BaseExecutor {
     Statement stmt = null;
     try {
       Configuration configuration = ms.getConfiguration();
-      //获取StatementHandler
+      //获取StatementHandler（Mybatis）
       StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
-      //创建statement对象，并进行参数设置
+      //创建statement对象，并通过JDBC进行参数设置（JDBC）
       stmt = prepareStatement(handler, ms.getStatementLog());
-      //执行查询
+      //执行查询（Mybatis）
       return handler.query(stmt, resultHandler);
     } finally {
       closeStatement(stmt);

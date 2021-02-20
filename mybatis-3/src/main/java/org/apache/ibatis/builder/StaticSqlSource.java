@@ -23,6 +23,7 @@ import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 用于描述ProviderSqlSource，DynamicSqlSource，RawSqlSource解析之后的得到的静态sql资源。
  * @author Clinton Begin
  */
 public class StaticSqlSource implements SqlSource {

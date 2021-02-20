@@ -42,15 +42,20 @@ import java.util.concurrent.locks.ReadWriteLock;
 public interface Cache {
 
   /**
+   * 获取缓存的id，通常情况下缓存的id是Mapper的命名空间名称
    * @return The identifier of this cache
    */
   String getId();
 
   /**
+   * 讲一个Java对象添加到缓存中
+   *
    * @param key
    *          Can be any object but usually it is a {@link CacheKey}
+   *          缓存的key，是CacheKey的实例
    * @param value
    *          The result of a select.
+   *          需要缓存的对象
    */
   void putObject(Object key, Object value);
 
@@ -91,11 +96,7 @@ public interface Cache {
   int getSize();
 
   /**
-   * Optional. As of 3.2.6 this method is no longer called by the core.
-   * <p>
-   * Any locking needed by the cache must be provided internally by the cache provider.
-   *
-   * @return A ReadWriteLock
+   * 在3.2.6版本后已经不在使用
    */
   default ReadWriteLock getReadWriteLock() {
     return null;

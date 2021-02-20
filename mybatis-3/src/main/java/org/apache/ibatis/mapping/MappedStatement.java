@@ -56,6 +56,9 @@ public final class MappedStatement {
   private Cache cache;
   private ParameterMap parameterMap;
   private List<ResultMap> resultMaps;
+  /**
+   * 当这个属性为true时，需执行DML语句，需要清空二级缓存，这个属性是通过mapper文件中flushCache指定的
+   */
   private boolean flushCacheRequired;
   private boolean useCache;
   private boolean resultOrdered;

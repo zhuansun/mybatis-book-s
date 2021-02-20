@@ -21,10 +21,14 @@ import java.util.Map;
 import org.apache.ibatis.cache.decorators.TransactionalCache;
 
 /**
+ * 用于管理所有的二级缓存对象
  * @author Clinton Begin
  */
 public class TransactionalCacheManager {
 
+  /**
+   * 通过HashMap对象维护二级缓存对应的TransactionalCache实例
+   */
   private final Map<Cache, TransactionalCache> transactionalCaches = new HashMap<>();
 
   public void clear(Cache cache) {
@@ -32,6 +36,7 @@ public class TransactionalCacheManager {
   }
 
   public Object getObject(Cache cache, CacheKey key) {
+    //获取二级缓存对应的TransactionalCache对象，然后根据缓存key获取缓存对象
     return getTransactionalCache(cache).getObject(key);
   }
 
@@ -52,7 +57,7 @@ public class TransactionalCacheManager {
   }
 
   private TransactionalCache getTransactionalCache(Cache cache) {
+    //computeIfAbsent存在就获取，不存在就 TransactionalCache::new 一个
     return transactionalCaches.computeIfAbsent(cache, TransactionalCache::new);
   }
-
 }

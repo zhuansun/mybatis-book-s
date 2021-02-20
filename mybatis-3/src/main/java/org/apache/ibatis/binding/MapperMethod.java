@@ -139,6 +139,7 @@ public class MapperMethod {
 
   private <E> Object executeForMany(SqlSession sqlSession, Object[] args) {
     List<E> result;
+    //将参数和sql的参数位置 一一对应起来，返回的Object其实是一个map
     Object param = method.convertArgsToSqlCommandParam(args);
     if (method.hasRowBounds()) {
       RowBounds rowBounds = method.extractRowBounds(args);
@@ -228,11 +229,10 @@ public class MapperMethod {
     private final SqlCommandType type;
 
     public SqlCommand(Configuration configuration, Class<?> mapperInterface, Method method) {
-      //
       final String methodName = method.getName();
-      // 获取声明该方法的类或接口的Class对象
+      // 获取声明该方法的类或接口的Class对象，目的是为了获取MappedStatement
       final Class<?> declaringClass = method.getDeclaringClass();
-      // 获取描述 insert,update等标签的MappedStatement对象
+      // 获取描述 insert,update 等标签的MappedStatement对象
       MappedStatement ms = resolveMappedStatement(mapperInterface, methodName, declaringClass,
           configuration);
 
@@ -315,9 +315,9 @@ public class MapperMethod {
       this.returnsOptional = Optional.class.equals(this.returnType);
       this.mapKey = getMapKey(method);
       this.returnsMap = this.mapKey != null;
-      //RowBounds参数位置索引
+      //RowBounds参数位置索引,用于处理后续的分页查询
       this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);
-      //ResultHander参数位置索引
+      //ResultHander参数位置索引，用于处理数据库中检索的每一行数据
       this.resultHandlerIndex = getUniqueParamIndex(method, ResultHandler.class);
       //ParamNameResolver用于解析Mapper方法参数
       this.paramNameResolver = new ParamNameResolver(configuration, method);
