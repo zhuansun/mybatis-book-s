@@ -41,12 +41,18 @@ public class SqlSourceBuilder extends BaseBuilder {
   }
 
   public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
+    //ParameterMappingTokenHandler： 是Mybatis的参数映射处理器，用于处理SQL中的#{}这种占位符
+    //比如将 where name = #{name} 处理成 where name = ?
+    //比如将 where userId = #{userId,javaType=long,jdbcType=NUMBERIC,typeHandler=MyTypeHander} 处理成 where userId = ?
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
+    //Token解析器，用于解析#{}参数
     GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
     String sql;
     if (configuration.isShrinkWhitespacesInSql()) {
+      //去除sql中的空格的，需要设置
       sql = parser.parse(removeExtraWhitespaces(originalSql));
     } else {
+      //调用parse方法将#{}解析成?
       sql = parser.parse(originalSql);
     }
     return new StaticSqlSource(configuration, sql, handler.getParameterMappings());
@@ -84,10 +90,20 @@ public class SqlSourceBuilder extends BaseBuilder {
 
     @Override
     public String handleToken(String content) {
+      //对占位符内容进行解析，为什么要解析，因为有的占位符是这种格式的
+      //#{userId,javaType=long,jdbcType=NUMBERIC,typeHandler=MyTypeHander}
+      //我们要把这种占位符中指定typeHander和类型的这些记录下来，以便于后续根据参数映射信息获取对应的TypeHandler为PreparedStatement对象设置值
       parameterMappings.add(buildParameterMapping(content));
       return "?";
     }
 
+    /**
+     *   * 这里的参数映射信息包括jdbcType,javaType,以及TypeHandler信息；
+     *    * - 是在MappedStatement中的getBoundSql中调用sqlSource的getBoundSql然后调用sqlSourceParser的parse
+     *    *    进行解析的时候，处理占位符的时候，会将占位符中的这些信息（#{userId,javaType=long,jdbcType=NUMBERIC,
+     *    *    typeHandler=MyTypeHander} ）也进行解析并保存在boundSql中的parameterMappings中；
+     *    * - 在执行sql的时候，会调用parameterHander的setParameters方法，会从boundSql中取出parameterMappings，然后进行设值
+     */
     private ParameterMapping buildParameterMapping(String content) {
       Map<String, String> propertiesMap = parseParameterMapping(content);
       String property = propertiesMap.get("property");

@@ -34,7 +34,7 @@ import org.w3c.dom.NodeList;
  */
 public class XMLScriptBuilder extends BaseBuilder {
 
-  private final XNode context;
+  private final XNode xNode;
   private boolean isDynamic;
   private final Class<?> parameterType;
   private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
@@ -45,7 +45,7 @@ public class XMLScriptBuilder extends BaseBuilder {
 
   public XMLScriptBuilder(Configuration configuration, XNode context, Class<?> parameterType) {
     super(configuration);
-    this.context = context;
+    this.xNode = context;
     this.parameterType = parameterType;
     initNodeHandlerMap();
   }
@@ -64,8 +64,10 @@ public class XMLScriptBuilder extends BaseBuilder {
   }
 
   public SqlSource parseScriptNode() {
-    MixedSqlNode rootSqlNode = parseDynamicTags(context);
+    //将sql配置转换成sqlNode
+    MixedSqlNode rootSqlNode = parseDynamicTags(xNode);
     SqlSource sqlSource;
+    //在parseDynamicTags这个方法里面，会被初始化，是根据SQL配置中是否包含id，where或者占位符等元素来判断的。
     if (isDynamic) {
       sqlSource = new DynamicSqlSource(configuration, rootSqlNode);
     } else {
@@ -77,18 +79,24 @@ public class XMLScriptBuilder extends BaseBuilder {
   protected MixedSqlNode parseDynamicTags(XNode node) {
     List<SqlNode> contents = new ArrayList<>();
     NodeList children = node.getNode().getChildNodes();
+    //对所有的子元素进行遍历
     for (int i = 0; i < children.getLength(); i++) {
       XNode child = node.newXNode(children.item(i));
+      //如果子元素为SQL文本内容，则使用TextSqlNode描述该节点
       if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
         String data = child.getStringBody("");
         TextSqlNode textSqlNode = new TextSqlNode(data);
+        //若SQL文本中，包含${}占位符，则为动态SQL
         if (textSqlNode.isDynamic()) {
           contents.add(textSqlNode);
           isDynamic = true;
         } else {
+          //否则就不是动态sql
           contents.add(new StaticTextSqlNode(data));
         }
-      } else if (child.getNode().getNodeType() == Node.ELEMENT_NODE) { // issue #628
+      } else if (child.getNode().getNodeType() == Node.ELEMENT_NODE) {
+        // issue #628
+        //如果子元素是if choose标签，则使用对应的NodeHandler处理
         String nodeName = child.getNode().getNodeName();
         NodeHandler handler = nodeHandlerMap.get(nodeName);
         if (handler == null) {
@@ -188,9 +196,13 @@ public class XMLScriptBuilder extends BaseBuilder {
 
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
+      //继续调用parseDynamicTags方法，解析if标签中的子节点
       MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
+      //获取if标签的test属性
       String test = nodeToHandle.getStringAttribute("test");
+      //创建IfSqlNode对象
       IfSqlNode ifSqlNode = new IfSqlNode(mixedSqlNode, test);
+      //将IfSqlNode对象添加到list中
       targetContents.add(ifSqlNode);
     }
   }

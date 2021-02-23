@@ -38,22 +38,32 @@ public class XMLLanguageDriver implements LanguageDriver {
     return new DefaultParameterHandler(mappedStatement, parameterObject, boundSql);
   }
 
+  /**
+   * 该方法用于解析XML文件中配置的SQL信息
+   * @param script Xnode表示的是sql配置，就是mapper.xml中写的是啥，这个xnode就是啥，最原始的sql配置（解析XML文件的到的node信息）
+   */
   @Override
   public SqlSource createSqlSource(Configuration configuration, XNode script, Class<?> parameterType) {
     XMLScriptBuilder builder = new XMLScriptBuilder(configuration, script, parameterType);
     return builder.parseScriptNode();
   }
 
+  /**
+   * 该方法用于解析Java注解配置的SQL配置
+   */
   @Override
   public SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType) {
     // issue #3
     if (script.startsWith("<script>")) {
+      //若字符串以<script>开头，则以xml方式解析
       XPathParser parser = new XPathParser(script, false, configuration.getVariables(), new XMLMapperEntityResolver());
       return createSqlSource(configuration, parser.evalNode("/script"), parameterType);
     } else {
       // issue #127
+      //解析sql中的配置的全局变量
       script = PropertyParser.parse(script, configuration.getVariables());
       TextSqlNode textSqlNode = new TextSqlNode(script);
+      //如果sql中仍然包含占位符，则返回DynamicSqlSource，否则返回RawSqlSource
       if (textSqlNode.isDynamic()) {
         return new DynamicSqlSource(configuration, textSqlNode);
       } else {

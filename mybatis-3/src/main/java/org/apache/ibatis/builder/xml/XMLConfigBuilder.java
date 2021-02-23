@@ -109,6 +109,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       //加载日志实现
       loadCustomLogImpl(settings);
       typeAliasesElement(root.evalNode("typeAliases"));
+      //解析拦截器
       pluginElement(root.evalNode("plugins"));
       objectFactoryElement(root.evalNode("objectFactory"));
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
@@ -187,6 +188,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       for (XNode child : parent.getChildren()) {
         String interceptor = child.getStringAttribute("interceptor");
         Properties properties = child.getChildrenAsProperties();
+        //通过java的反射机制，创建拦截器实例
         Interceptor interceptorInstance = (Interceptor) resolveClass(interceptor).getDeclaredConstructor().newInstance();
         interceptorInstance.setProperties(properties);
         configuration.addInterceptor(interceptorInstance);

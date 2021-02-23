@@ -19,5 +19,10 @@ package org.apache.ibatis.scripting.xmltags;
  * @author Clinton Begin
  */
 public interface SqlNode {
+  /**
+   * 用于解析sql节点，根据参数信息，生成静态的sql内容
+   * 这里生成的sql静态信息，其实是这种形式的：insert into user(create_time, name, password, phone, nick_name) values(?,?,?,?,?);
+   * 就是包含 ???? 的形式，因为真正填充查询参数的时候，是在使用ParameterHandler进行设值的
+   */
   boolean apply(DynamicContext context);
 }

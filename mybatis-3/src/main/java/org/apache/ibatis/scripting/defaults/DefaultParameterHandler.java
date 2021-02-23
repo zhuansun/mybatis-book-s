@@ -62,6 +62,12 @@ public class DefaultParameterHandler implements ParameterHandler {
   public void setParameters(PreparedStatement ps) {
     ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
     //boundSQl是sql解析后的结果，这里是拿到sql中的所有参数信息（包括需要设值的，和不要设值的）
+    /* 这里的参数映射信息包括jdbcType,javaType,以及TypeHandler信息；
+     * - 是在MappedStatement中的getBoundSql中调用sqlSource的getBoundSql然后调用sqlSourceParser的parse
+     *    进行解析的时候，处理占位符的时候，会将占位符中的这些信息（#{userId,javaType=long,jdbcType=NUMBERIC,
+     *    typeHandler=MyTypeHander} ）也进行解析并保存在boundSql中的parameterMappings中；
+     * - 在执行sql的时候，会调用parameterHander的setParameters方法，会从boundSql中取出parameterMappings，然后进行设值
+   */
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     if (parameterMappings != null) {
       for (int i = 0; i < parameterMappings.size(); i++) {

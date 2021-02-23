@@ -38,6 +38,7 @@ public interface LanguageDriver {
   ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql);
 
   /**
+   * 解析通过XML配置的sql配置
    * Creates an {@link SqlSource} that will hold the statement read from a mapper xml file.
    * It is called during startup, when the mapped statement is read from a class or an xml file.
    *
@@ -49,6 +50,7 @@ public interface LanguageDriver {
   SqlSource createSqlSource(Configuration configuration, XNode script, Class<?> parameterType);
 
   /**
+   * 解析通过java注解配置的sql配置
    * Creates an {@link SqlSource} that will hold the statement read from an annotation.
    * It is called during startup, when the mapped statement is read from a class or an xml file.
    *

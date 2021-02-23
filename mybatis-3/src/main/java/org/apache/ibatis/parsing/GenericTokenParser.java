@@ -74,6 +74,8 @@ public class GenericTokenParser {
           builder.append(src, start, src.length - start);
           offset = src.length;
         } else {
+          //handleToken，真正替换占位符
+          //hander是创建GenericTokenParser传进来的
           builder.append(handler.handleToken(expression.toString()));
           offset = end + closeToken.length();
         }

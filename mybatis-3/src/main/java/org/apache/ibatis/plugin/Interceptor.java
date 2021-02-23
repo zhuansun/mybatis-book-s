@@ -22,12 +22,27 @@ import java.util.Properties;
  */
 public interface Interceptor {
 
+  /**
+   * 用于定义拦截逻辑，会在目标方法调用时执行
+   * @param invocation 封装了目标对象的方法，以及参数信息
+   * @return
+   * @throws Throwable
+   */
   Object intercept(Invocation invocation) throws Throwable;
 
+  /**
+   * 用于创建代理对象，这个方法的参数是被代理对象的实例
+   * @param target
+   * @return
+   */
   default Object plugin(Object target) {
     return Plugin.wrap(target, this);
   }
 
+  /**
+   * 用于设置插件的属性值
+   * @param properties
+   */
   default void setProperties(Properties properties) {
     // NOP
   }
