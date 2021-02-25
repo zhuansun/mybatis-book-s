@@ -4,7 +4,8 @@
 <mapper namespace="com.blog4java.mybatis.example.mapper.UserMapper">
 
     <resultMap id="detailMap" type="com.blog4java.mybatis.example.entity.User">
-        <collection property="orders" ofType="com.blog4java.mybatis.example.entity.Order"
+        <collection property="orders"
+                    ofType="com.blog4java.mybatis.example.entity.Order"
                     select="com.blog4java.mybatis.example.mapper.OrderMapper.listOrdersByUserId"
                     javaType="java.util.ArrayList"
                     column="id">

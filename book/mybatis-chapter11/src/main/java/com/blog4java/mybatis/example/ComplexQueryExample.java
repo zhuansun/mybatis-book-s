@@ -1,6 +1,7 @@
 package com.blog4java.mybatis.example;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.blog4java.mybatis.example.entity.Order;
 import com.blog4java.mybatis.example.entity.User;
 import com.blog4java.mybatis.example.mapper.OrderMapper;
@@ -71,7 +72,9 @@ public class ComplexQueryExample {
 
     @Test
     public void testOne2ManyQuery() {
+        //看看有没有开启懒加载
         User user = userMapper.getUserByIdFull(1L);
+        System.out.println(JSONObject.toJSONString(user));
     }
 
     @Test

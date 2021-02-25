@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 @MapperScan(basePackages = {"com.blog4java.example.mapper"},
         sqlSessionTemplateRef="sqlSessionTemplate")
 public class DataSourceConfiguration {
+
     @Bean(name = "dataSource")
     @Primary
     public DataSource setDataSource() {

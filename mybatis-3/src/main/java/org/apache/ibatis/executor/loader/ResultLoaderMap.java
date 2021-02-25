@@ -216,6 +216,7 @@ public class ResultLoaderMap {
                 old.parameterObject, old.targetType, old.cacheKey, old.boundSql);
       }
 
+      //调用resultLoader的loadResult方法执行懒加载查询
       this.metaResultObject.setValue(property, this.resultLoader.loadResult());
     }
 
